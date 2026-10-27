@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+auth/state.json
+.auth/
+*.state.json
+artifacts/screenshots/*.png
+artifacts/traces/*.zip
+artifacts/reports/*.html
+.env
+*.env
+.idea/
+.vscode/

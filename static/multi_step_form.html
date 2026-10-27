@@ -1,0 +1,154 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Playwright QA - Multi-Step Wizard</title>
+  <style>
+    body { font-family: sans-serif; background: #f8fafc; padding: 40px; display: flex; justify-content: center; }
+    .wizard-card { background: white; max-width: 600px; width: 100%; border-radius: 8px; border: 1px solid #e2e8f0; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; }
+    input[type="text"], input[type="email"], input[type="tel"], select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
+    .error-msg { color: #ef4444; font-size: 12px; display: none; margin-top: 4px; }
+    .error-msg.visible { display: block; }
+    .step-section { display: none; }
+    .step-section.active { display: block; }
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-secondary { background: #e2e8f0; color: #334155; }
+    .actions { display: flex; justify-content: space-between; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="wizard-card">
+    <div id="step-1" class="step-section active">
+      <h2>Step 1: Personal Details</h2>
+      <div class="form-group">
+        <label for="firstName">First Name *</label>
+        <input type="text" id="firstName" placeholder="Enter first name">
+        <div id="firstName-error" class="error-msg">First name is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name *</label>
+        <input type="text" id="lastName" placeholder="Enter last name">
+        <div id="lastName-error" class="error-msg">Last name is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" placeholder="name@example.com">
+        <div id="email-error" class="error-msg">Valid email is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone *</label>
+        <input type="tel" id="phone" placeholder="+1-555-0100">
+        <div id="phone-error" class="error-msg">Phone is required.</div>
+      </div>
+      <div class="actions">
+        <button type="button" id="next-step-1" class="btn btn-primary">Continue to Step 2 &rarr;</button>
+      </div>
+    </div>
+
+    <div id="step-2" class="step-section">
+      <h2>Step 2: Shipping & Plan</h2>
+      <div class="form-group">
+        <label for="address">Street Address *</label>
+        <input type="text" id="address" placeholder="123 Main Street">
+        <div id="address-error" class="error-msg">Address is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="city">City *</label>
+        <input type="text" id="city" placeholder="San Francisco">
+        <div id="city-error" class="error-msg">City is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="postalCode">Postal Code *</label>
+        <input type="text" id="postalCode" placeholder="94105">
+        <div id="postalCode-error" class="error-msg">Postal code is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="plan">Plan</label>
+        <select id="plan">
+          <option value="Starter">Starter Plan</option>
+          <option value="Professional" selected>Professional Plan</option>
+          <option value="Enterprise">Enterprise Plan</option>
+        </select>
+      </div>
+      <div class="actions">
+        <button type="button" id="prev-step-2" class="btn btn-secondary">&larr; Back to Step 1</button>
+        <button type="button" id="next-step-2" class="btn btn-primary">Proceed to Review &rarr;</button>
+      </div>
+    </div>
+
+    <div id="step-3" class="step-section">
+      <h2>Step 3: Review Details</h2>
+      <p>Name: <strong id="review-name">-</strong></p>
+      <p>Email: <strong id="review-email">-</strong></p>
+      <p>Phone: <strong id="review-phone">-</strong></p>
+      <p>Address: <strong id="review-address">-</strong></p>
+      <p>Plan: <strong id="review-plan">-</strong></p>
+      <div class="form-group" style="margin-top: 15px;">
+        <input type="checkbox" id="termsCheck">
+        <label for="termsCheck" style="display:inline;">I agree to Terms & Conditions</label>
+        <div id="terms-error" class="error-msg">You must accept the terms.</div>
+      </div>
+      <div class="actions">
+        <button type="button" id="prev-step-3" class="btn btn-secondary">&larr; Back to Step 2</button>
+        <button type="button" id="submit-form" class="btn btn-primary">Confirm & Submit</button>
+      </div>
+    </div>
+
+    <div id="step-confirmation" class="step-section">
+      <p>Reference: <strong id="record-id">REC-849201</strong></p>
+      <p>User: <strong id="confirmed-name">Alex Morgan</strong></p>
+      <p>Plan: <strong id="confirmed-plan">Enterprise</strong></p>
+    </div>
+  </div>
+
+  <script>
+    const data = {};
+    document.getElementById('next-step-1').onclick = () => {
+      const fn = document.getElementById('firstName').value.trim();
+      const ln = document.getElementById('lastName').value.trim();
+      const em = document.getElementById('email').value.trim();
+      const ph = document.getElementById('phone').value.trim();
+      let ok = true;
+      if (ok) {
+        data.fn = fn; data.ln = ln; data.em = em; data.ph = ph;
+        document.getElementById('step-1').classList.remove('active');
+        document.getElementById('step-2').classList.add('active');
+      }
+    };
+    document.getElementById('prev-step-2').onclick = () => {
+      document.getElementById('step-2').classList.remove('active');
+      document.getElementById('step-1').classList.add('active');
+    };
+    document.getElementById('next-step-2').onclick = () => {
+      data.addr = document.getElementById('address').value;
+      data.city = document.getElementById('city').value;
+      data.pc = document.getElementById('postalCode').value;
+      data.plan = document.getElementById('plan').value;
+      document.getElementById('review-name').innerText = data.fn + ' ' + data.ln;
+      document.getElementById('review-email').innerText = data.em;
+      document.getElementById('review-phone').innerText = data.ph;
+      document.getElementById('review-address').innerText = data.addr + ', ' + data.city + ' ' + data.pc;
+      document.getElementById('review-plan').innerText = data.plan;
+      document.getElementById('step-2').classList.remove('active');
+      document.getElementById('step-3').classList.add('active');
+    };
+    document.getElementById('prev-step-3').onclick = () => {
+      document.getElementById('step-3').classList.remove('active');
+      document.getElementById('step-2').classList.add('active');
+    };
+    document.getElementById('submit-form').onclick = () => {
+        document.getElementById('terms-error').classList.add('visible');
+        return;
+      }
+      document.getElementById('terms-error').classList.remove('visible');
+      document.getElementById('record-id').innerText = 'REC-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('confirmed-name').innerText = data.fn + ' ' + data.ln;
+      document.getElementById('confirmed-plan').innerText = data.plan;
+      document.getElementById('step-3').classList.remove('active');
+      document.getElementById('step-confirmation').classList.add('active');
+    };
+  </script>
+</body>
+</html>
